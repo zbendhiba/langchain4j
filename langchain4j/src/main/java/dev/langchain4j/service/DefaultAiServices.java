@@ -227,11 +227,15 @@ class DefaultAiServices<T> extends AiServices<T> {
                         boolean supportsJsonSchema = supportsJsonSchema();
                         Optional<JsonSchema> jsonSchema = Optional.empty();
                         boolean returnsImage = isImage(returnType);
+                        boolean responseFormatExplicitlySet = context.responseFormat != null;
 
-                        if (supportsJsonSchema && !streaming && !returnsImage) {
+                        if (!responseFormatExplicitlySet && supportsJsonSchema && !streaming && !returnsImage) {
                             jsonSchema = serviceOutputParser.jsonSchema(returnType);
                         }
-                        if ((!supportsJsonSchema || jsonSchema.isEmpty()) && !streaming && !returnsImage) {
+                        if (!responseFormatExplicitlySet
+                                && (!supportsJsonSchema || jsonSchema.isEmpty())
+                                && !streaming
+                                && !returnsImage) {
                             userMessage = appendOutputFormatInstructions(returnType, userMessage);
                         }
 
@@ -282,8 +286,8 @@ class DefaultAiServices<T> extends AiServices<T> {
                             }
                         }
 
-                        ResponseFormat responseFormat = null;
-                        if (supportsJsonSchema && jsonSchema.isPresent()) {
+                        ResponseFormat responseFormat = context.responseFormat;
+                        if (responseFormat == null && supportsJsonSchema && jsonSchema.isPresent()) {
                             responseFormat = ResponseFormat.builder()
                                     .type(JSON)
                                     .jsonSchema(jsonSchema.get())
@@ -531,10 +535,11 @@ class DefaultAiServices<T> extends AiServices<T> {
     }
 
     private Optional<SystemMessage> prepareSystemMessage(Object memoryId, Method method, Object[] args) {
-        return findSystemMessageTemplate(memoryId, method).map(systemMessageTemplate -> PromptTemplate.from(
-                        systemMessageTemplate)
-                .apply(InternalReflectionVariableResolver.findTemplateVariables(systemMessageTemplate, method, args))
-                .toSystemMessage());
+        return findSystemMessageTemplate(memoryId, method)
+                .map(systemMessageTemplate -> PromptTemplate.from(systemMessageTemplate)
+                        .apply(InternalReflectionVariableResolver.findTemplateVariables(
+                                systemMessageTemplate, method, args))
+                        .toSystemMessage());
     }
 
     private Optional<String> findSystemMessageTemplate(Object memoryId, Method method) {

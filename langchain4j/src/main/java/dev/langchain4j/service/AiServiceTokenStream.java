@@ -198,7 +198,8 @@ public class AiServiceTokenStream implements TokenStream {
         ChatRequest chatRequest = context.chatRequestTransformer.apply(
                 ChatRequest.builder()
                         .messages(messages)
-                        .parameters(chatRequestParameters(invocationContext.methodArguments(), effectiveTools))
+                        .parameters(chatRequestParameters(
+                                invocationContext.methodArguments(), effectiveTools, context.responseFormat))
                         .build(),
                 invocationContext.chatMemoryId());
 

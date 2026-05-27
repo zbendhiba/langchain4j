@@ -350,8 +350,8 @@ class AiServiceStreamingResponseHandler implements StreamingChatResponseHandler 
                     refreshDynamicProviders(toolServiceContext, messages, invocationContext);
             updatedToolContext = ToolSearchService.addFoundTools(updatedToolContext, toolResults);
 
-            ChatRequestParameters parameters =
-                    chatRequestParameters(invocationContext.methodArguments(), updatedToolContext.effectiveTools());
+            ChatRequestParameters parameters = chatRequestParameters(
+                    invocationContext.methodArguments(), updatedToolContext.effectiveTools(), context.responseFormat);
 
             ChatRequest nextChatRequest = context.chatRequestTransformer.apply(
                     ChatRequest.builder()

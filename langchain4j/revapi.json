@@ -13,6 +13,12 @@
           "code": "java.annotation.removed",
           "new": "class dev.langchain4j.service.tool.AiServiceTool",
           "justification": "@Internal removed intentionally: AiServiceTool is now part of the public API and can be constructed and passed to AiServices directly by users (e.g. via AiServices.tools(List<AiServiceTool>))."
+        },
+        {
+          "ignore": true,
+          "code": "java.class.externalClassExposedInAPI",
+          "new": "missing-class dev.langchain4j.model.chat.request.ResponseFormat",
+          "justification": "ResponseFormat from langchain4j-core is intentionally exposed in the public AiServices.builder() API to enable per-service response format configuration, allowing a shared ChatModel to back multiple AiServices with different output schemas."
         }
       ]
     }

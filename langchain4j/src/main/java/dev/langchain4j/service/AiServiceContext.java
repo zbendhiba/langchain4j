@@ -9,6 +9,7 @@ import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.moderation.ModerationModel;
 import dev.langchain4j.observability.api.AiServiceListenerRegistrar;
 import dev.langchain4j.rag.RetrievalAugmentor;
@@ -34,6 +35,8 @@ public class AiServiceContext {
 
     public ChatModel chatModel;
     public StreamingChatModel streamingChatModel;
+
+    public ResponseFormat responseFormat;
 
     public ChatMemoryService chatMemoryService;
 

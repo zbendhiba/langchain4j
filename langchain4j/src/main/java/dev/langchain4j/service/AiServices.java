@@ -26,6 +26,9 @@ import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.request.ResponseFormat;
+import dev.langchain4j.model.chat.request.ResponseFormatType;
+import dev.langchain4j.model.chat.request.json.JsonSchema;
 import dev.langchain4j.model.chat.response.CompleteToolCall;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import dev.langchain4j.model.input.structured.StructuredPrompt;
@@ -239,6 +242,47 @@ public abstract class AiServices<T> {
      */
     public AiServices<T> streamingChatModel(StreamingChatModel streamingChatModel) {
         context.streamingChatModel = streamingChatModel;
+        return this;
+    }
+
+    /**
+     * Configures the response format to be used for all AI service method calls.
+     * <p>
+     * When set, this overrides any automatic response format generation based on the method return type,
+     * allowing the same {@link ChatModel} to be shared across multiple AI services with different response formats.
+     * This is particularly useful when the return type is {@link String} and structured JSON output is still required
+     * (e.g. in frameworks like Apache Camel where the response is always a String),
+     * since automatic schema generation does not apply to {@link String} return types.
+     * <p>
+     * When the AI service method returns a POJO and an explicit response format is set,
+     * the user is responsible for ensuring the schema is consistent with the return type,
+     * as the response will still be deserialized into the POJO regardless of the schema provided.
+     *
+     * @param responseFormat The response format to use.
+     * @return builder
+     */
+    public AiServices<T> responseFormat(ResponseFormat responseFormat) {
+        context.responseFormat = ensureNotNull(responseFormat, "responseFormat");
+        return this;
+    }
+
+    /**
+     * Configures a JSON response format with the given schema for all AI service method calls.
+     * <p>
+     * This is a convenience method equivalent to calling
+     * {@link #responseFormat(ResponseFormat)} with a {@link ResponseFormat} of type JSON
+     * containing the provided schema.
+     * <p>
+     * See {@link #responseFormat(ResponseFormat)} for important notes on precedence and POJO return types.
+     *
+     * @param jsonSchema The JSON schema to use.
+     * @return builder
+     */
+    public AiServices<T> responseFormat(JsonSchema jsonSchema) {
+        context.responseFormat = ResponseFormat.builder()
+                .type(ResponseFormatType.JSON)
+                .jsonSchema(ensureNotNull(jsonSchema, "jsonSchema"))
+                .build();
         return this;
     }
 
